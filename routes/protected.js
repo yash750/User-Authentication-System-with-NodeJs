@@ -6,3 +6,4 @@ const router = express.Router();
 router.get("/index",verifyUser,loggedInPage);
 
 module.exports =router;
+

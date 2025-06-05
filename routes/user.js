@@ -1,9 +1,10 @@
 const express= require("express");
-const { registerUser, loginUser,logoutUser,dumpUsers,verifyEmail} = require("../controllers/user");
+const { testEmail, registerUser, loginUser,logoutUser,dumpUsers,verifyEmail} = require("../controllers/user");
 const authenticate = require('../authenticate');
 const router = express.Router();
 
 router.post("/signup",registerUser);
+router.get("/test-email",testEmail);
 router.get("/verify-email",verifyEmail);
 router.post("/login",authenticate.isVerifiedUser,loginUser);             
 router.get("/logout",authenticate.verifyUser,logoutUser);

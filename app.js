@@ -40,9 +40,13 @@ app.use("/",(req,res)=>{                 //default route
   res.send("Welcome to User Authentication System !!");
 })
 
+module.exports = app;
+
 const port = process.env.PORT || 8000;
 
-//Starting a server
-app.listen(port, () => {
-  console.log(`App is running at port ${port} !!`);
-});
+//Starting a server : server starts only if run directly, and not during testing.
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`App is running at port ${port} !!`);
+  });
+}

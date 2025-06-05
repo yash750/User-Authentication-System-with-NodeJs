@@ -13,11 +13,11 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "fs": "^0.0.1-security",
-    "mongoose": "^5.11.9",
+    "mongoose": "^5.13.23",
     "nodemon": "^2.0.6"
   },
   "scripts": {
-    "test": "nodemon app.js",
+    "test": "jest",
     "start": "node app.js"
   },
   "author": "Harshit Sharma",

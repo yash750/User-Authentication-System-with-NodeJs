@@ -5,11 +5,14 @@ var crypto=require('crypto');
 const user = require("../models/user");
 const algorithm = 'aes256';
 const key=process.env.secretKey;
-const sgMail = require("@sendgrid/mail");
+import { Resend } from 'resend';
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-
+exports.testEmail = (req, res)=>{
+    res.send("EndPoint reached");
+    console.log("EndPoint reached");
+}
 
 exports.registerUser = async (req,res) => {
 
@@ -18,38 +21,14 @@ exports.registerUser = async (req,res) => {
     }
     await User.findOne({email: req.body.email})
     .then(async (user) => {
-        if(user) 
-        {   
-            if(user.isVerified===false) {
-
-                const msg = {
-                    from: "harshitsharmabtp@gmail.com",
-                    to: user.email,
-                    subject: "Secure Auth Registration - Verify your Email",
-                    text: `Hi there, Thanks for registering !!,
-                        Please copy and paste the url given below to verify your account: 
-                        http://${req.headers.host}/user/verify-email?token=${user.emailToken}`,
-                    html: `<h1>Hi there,</h1>
-                          <p>Thanks for registering !!</p>
-                          <p>Please click on the link given below to verify your account:</p>
-                          <a href="http://${req.headers.host}/user/verify-email?token=${user.emailToken}">Verify your account</a>`,
-                  };
-
-                  try 
-                {
-                    await sgMail.send(msg); //calling sendgrid to send email to the user's mail 
-                    res.status(201).json({"msg": "Verification link sent again. Please check your email for verification link. !!"});
-                    return;
-                } 
-                catch(err) {
-                    res.status(500).json({error: "Something went Wrong. Try again !!",desc: err});
-                    return;
-                }
-            }
-            res.status(403).json({"msg": "Email already registered with some other account !!"});
+        if(user){   
+            return res.status(403).json({"msg": "Email already registered with some other account !!"});
+        }})
+        .catch(async (err) => {
+            res.status(500).json({error: "Something went Wrong. Try again !!",desc: err});
             return;
-        }
-
+        })
+            console.log("you are under registration.")
             const salt= await bcrypt.genSalt(13);
             const encryptedPassword =await bcrypt.hash(req.body.password, salt);
         
@@ -65,7 +44,7 @@ exports.registerUser = async (req,res) => {
                 newUser.lastname = req.body.lastname;
 
             const msg = {
-                from: "harshitsharmabtp@gmail.com",
+                from: "yashintern6568@gmail.com",
                 to: newUser.email,
                 subject: "Secure Auth Registration - Verify your Email",
                 text: `Hi there, Thanks for registering !!,
@@ -76,10 +55,10 @@ exports.registerUser = async (req,res) => {
                       <p>Please click on the link given below to verify your account:</p>
                       <a href="http://${req.headers.host}/user/verify-email?token=${newUser.emailToken}">Verify your account</a>`,
               };
-            try 
-            {
-                await sgMail.send(msg); //calling sendgrid to send email to the user's mail 
+            try {
+                // await sgMail.send(msg); //calling sendgrid to send email to the user's mail
                 await newUser.save();
+                await resend.emails.send(msg);
                 res.status(201).json({"msg": "User Registration Successfull. Please check your email for verification link. !!"});
                 return;
             }
@@ -87,13 +66,7 @@ exports.registerUser = async (req,res) => {
                 res.status(500).json({error: "Something went Wrong !!",desc: err});
                 return;
             }
-            
-    })
-    .catch((err)=> {
-        res.status(500).json({error: err});
-    })
-
-}
+    }
 
 //email verification api
 exports.verifyEmail = async (req, res) => {
@@ -138,14 +111,14 @@ exports.loginUser = async (req,res) => {
                     var exp =  parseInt(Date.now())+parseInt(process.env.expire);       
                     var token=user._id+'.'+exp;
                     console.log(key);
-                    const cipher=await crypto.createCipher(algorithm,toString(process.env.secretKey));
-                    var encrypted=await cipher.update(token,'utf8','hex')+cipher.final('hex');
+                    const cipher= await crypto.createCipher(algorithm,toString(process.env.secretKey));
+                    var encrypted= await cipher.update(token,'utf8','hex')+cipher.final('hex');
                     console.log(token);             
-                     user.tokens.push({token: encrypted});
-                     await user.save();
+                    user.tokens.push({token: encrypted});
+                    await user.save();
                
-                     res.status(200).json({"msg" : "Logged In !!",token: encrypted});
-                     return;
+                    res.status(200).json({"msg" : "Logged In !!",token: encrypted});
+                    return;
                  }
                  if(!err && !same) {
                     res.status(401).json({error: "Unauthorized !! Incorrect Password"});
@@ -218,4 +191,4 @@ exports.dumpUsers = (req,res) => {         //dump all users except admin
         })
         return res.status(200).json({"msg": "Dump Successfull !!"});
     })   
-} 
+}
