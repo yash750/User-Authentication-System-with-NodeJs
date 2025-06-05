@@ -58,7 +58,6 @@ function generateToken(id, exp) {
 
 beforeEach(() => {
   process.env.secretKey = '12345678901234567890123456789012';
-  process.env.secretkey = '12345678901234567890123456789012';
   process.env.expire = '60000';
   jest.clearAllMocks();
   User.mockImplementation(() => ({ save: jest.fn().mockResolvedValue(true), tokens: [] }));

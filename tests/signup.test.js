@@ -4,6 +4,7 @@ const request = require("supertest");
 const app = require("../app");
 const mongoose = require("mongoose");
 const User = require("../models/user");
+const bcrypt = require('bcrypt');
 
 // ✅ Set global timeout for this test suite
 jest.setTimeout(5000); // 10 seconds
@@ -14,9 +15,6 @@ beforeAll(async () => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })});
-
-// Updated signup tests using mocks
-jest.mock('@sendgrid/mail');
 
 jest.mock('../models/user', () => {
   const m = jest.fn();
@@ -46,14 +44,9 @@ jest.mock('bcrypt', () => ({
   compare: jest.fn(),
 }));
 
-const request = require('supertest');
-const app = require('../app');
-const User = require('../models/user');
-const bcrypt = require('bcrypt');
 
 beforeEach(() => {
   process.env.secretKey = '12345678901234567890123456789012';
-  process.env.secretkey = '12345678901234567890123456789012';
   process.env.expire = '60000';
   process.env.RESEND_API_KEY = 'test';
   jest.clearAllMocks();
