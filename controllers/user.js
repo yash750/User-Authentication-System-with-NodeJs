@@ -5,13 +5,14 @@ var crypto=require('crypto');
 const user = require("../models/user");
 const algorithm = 'aes256';
 const key=process.env.secretKey;
-import { Resend } from 'resend';
+const { Resend } = require('resend');
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 exports.testEmail = (req, res)=>{
     res.send("EndPoint reached");
     console.log("EndPoint reached");
+    return;
 }
 
 exports.registerUser = async (req,res) => {

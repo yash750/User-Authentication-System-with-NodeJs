@@ -1,4 +1,4 @@
-jest.mock('@sendgrid/mail'); // ✅ Mock SendGrid
+jest.mock('resend'); // ✅ Mock "resend" mail service
 
 const request = require("supertest");
 const app = require("../app");
@@ -9,7 +9,7 @@ const User = require("../models/user");
 jest.setTimeout(5000); // 10 seconds
 
 beforeAll(async () => {
-  process.env.SENDGRID_API_KEY = "SG.TEST_FAKE_KEY"; // dummy key
+  process.env.RESEND_API_KEY = "FAKE_KEY"; // dummy key
   await mongoose.connect(process.env.DATABASE, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
