@@ -4,7 +4,8 @@ const bcrypt=require('bcrypt');
 var crypto=require('crypto');
 const user = require("../models/user");
 const algorithm = 'aes256';
-const key=process.env.secretKey;
+const key = process.env.secretKey;
+// use commonjs import for resend to avoid ESM issues
 const { Resend } = require('resend');
 
 const resend = new Resend(process.env.RESEND_API_KEY);
